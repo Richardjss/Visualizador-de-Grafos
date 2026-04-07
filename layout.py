@@ -122,7 +122,7 @@ def create_layout():
                 html.Button('❌ Fechar', id='btn-close-edge-menu', style={**CTX_BTN_STYLE, 'backgroundColor': '#bdc3c7', 'marginBottom': '0'}, className='hover-btn')
             ]),
 
-            # MODAL DE EDIÇÃO (Agora com Bootstrap)
+            # MODAL DE EDIÇÃO
             html.Div(id='edit-modal', style={'display': 'none', 'position': 'absolute', 'top': '50%', 'left': '50%', 'transform': 'translate(-50%, -50%)', 'zIndex': 2000, 'backgroundColor': 'white', 'padding': '20px', 'borderRadius': '8px', 'boxShadow': '0px 0px 15px rgba(0,0,0,0.3)'}, children=[
                 html.H3("Editar Rótulo", style={'marginTop': '0'}),
                 dbc.Input(id='edit-input', type='text', style={'marginBottom': '10px'}),
@@ -130,7 +130,7 @@ def create_layout():
                 html.Button('Cancelar', id='btn-cancel-edit', style={'padding': '8px 15px', 'backgroundColor': '#e74c3c', 'color': 'white', 'border': 'none', 'cursor': 'pointer', 'fontWeight': 'bold', 'borderRadius': '4px', 'marginLeft': '10px'}, className='hover-btn')
             ]),
 
-            # MODAL SALVAR (Agora com Bootstrap)
+            # MODAL SALVAR
             html.Div(id='save-modal', style={'display': 'none', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, children=[
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '320px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Salvar Grafo", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
@@ -143,7 +143,7 @@ def create_layout():
                 ])
             ]),
 
-            # MODAL GRAFO PERSONALIZADO (Agora com Bootstrap)
+            # MODAL GRAFO PERSONALIZADO
             html.Div(id='custom-graph-modal', style={'display': 'none', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, children=[
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '320px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Círculo Personalizado", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
@@ -156,7 +156,7 @@ def create_layout():
                 ])
             ]),
 
-            # MODAL BFS (Agora com Bootstrap Select)
+            # MODAL BFS
             html.Div(id='bfs-modal', style={'display': 'none', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, children=[
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '320px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Busca em Largura (BFS)", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
@@ -169,7 +169,7 @@ def create_layout():
                 ])
             ]),
 
-            # MODAL DFS (Agora com Bootstrap Select)
+            # MODAL DFS
             html.Div(id='dfs-modal', style={'display': 'none', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, children=[
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '320px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Busca em Profundidade (DFS)", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
@@ -182,7 +182,7 @@ def create_layout():
                 ])
             ]),
 
-            # MODAL ADICIONAR VÉRTICE (Agora com Bootstrap)
+            # MODAL ADICIONAR VÉRTICE
             html.Div(id='add-node-modal', style={'display': 'none', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, children=[
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '350px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Adicionar Novo Vértice", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
