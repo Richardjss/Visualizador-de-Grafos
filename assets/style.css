@@ -138,23 +138,38 @@
     border-top-color: #ffffff !important; /* Pinta a setinha de branco tbm */
 }
 
-/* ==========================================
-   AJUSTE DO DCC.DROPDOWN PARA O MODO ESCURO
-   ========================================== */
-.dark-theme .Select-control {
+/* 1. Limita o tamanho da lista para não ficar gigante */
+.meu-dropdown .Select-menu-outer {
+    max-height: 140px !important;
+}
+.meu-dropdown .VirtualizedSelect {
+    max-height: 138px !important;
+}
+
+/* 2. Fundo branco igual ao dbc.Input no modo escuro */
+.dark-theme .meu-dropdown .Select-control,
+.dark-theme .meu-dropdown .Select-menu-outer {
     background-color: #ffffff !important;
     border: 1px solid #ccc !important;
+}
+
+/* 3. A MARRETA DA COR: Força qualquer coisa dentro desse dropdown a ser texto escuro */
+.dark-theme .meu-dropdown,
+.dark-theme .meu-dropdown *,
+.dark-theme .meu-dropdown span,
+.dark-theme .meu-dropdown div,
+.dark-theme .meu-dropdown input {
     color: #111111 !important;
 }
 
-.dark-theme .Select-menu-outer {
-    background-color: #ffffff !important;
-    color: #111111 !important;
-    border: 1px solid #3498db !important;
-    z-index: 9999 !important;
+/* 4. Efeito hover (passar o mouse) nas opções da lista */
+.dark-theme .meu-dropdown .VirtualizedSelectOption:hover,
+.dark-theme .meu-dropdown .VirtualizedSelectFocusedOption {
+    background-color: #3498db !important; /* Fica azul */
+    color: #ffffff !important;            /* Texto fica branco */
 }
 
-.dark-theme .is-focused:not(.is-open) > .Select-control {
-    border-color: #3498db !important;
-    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+/* 5. Garante que o texto dentro da opção selecionada no hover fique branco */
+.dark-theme .meu-dropdown .VirtualizedSelectFocusedOption span {
+    color: #ffffff !important; 
 }
