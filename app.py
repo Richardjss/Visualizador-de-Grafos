@@ -604,27 +604,23 @@ def controlar_detalhes_vertice(n_abrir, n_fechar, selected, elements, props):
 # ==========================================
 @app.callback(
     Output('bfs-modal', 'style', allow_duplicate=True),
-    Output('bfs-start-node', 'options'),
     Input('btn-bfs', 'n_clicks'), Input('btn-cancel-bfs', 'n_clicks'), Input('btn-confirm-bfs', 'n_clicks'),
-    State('cyto-graph', 'elements'), prevent_initial_call=True
+    prevent_initial_call=True
 )
-def toggle_bfs_modal(btn, cancel, confirm, elements):
+def toggle_bfs_modal(btn, cancel, confirm):
     if ctx.triggered_id == 'btn-bfs':
-        nodes = [{'label': el['data']['label'], 'value': el['data']['id']} for el in elements if 'source' not in el['data']]
-        return {'display': 'flex', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, nodes
-    return {'display': 'none'}, []
+        return {'display': 'flex', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}
+    return {'display': 'none'}
 
 @app.callback(
     Output('dfs-modal', 'style', allow_duplicate=True),
-    Output('dfs-start-node', 'options'),
     Input('btn-dfs', 'n_clicks'), Input('btn-cancel-dfs', 'n_clicks'), Input('btn-confirm-dfs', 'n_clicks'),
-    State('cyto-graph', 'elements'), prevent_initial_call=True
+    prevent_initial_call=True
 )
-def toggle_dfs_modal(btn, cancel, confirm, elements):
+def toggle_dfs_modal(btn, cancel, confirm):
     if ctx.triggered_id == 'btn-dfs':
-        nodes = [{'label': el['data']['label'], 'value': el['data']['id']} for el in elements if 'source' not in el['data']]
-        return {'display': 'flex', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}, nodes
-    return {'display': 'none'}, []
+        return {'display': 'flex', 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'backgroundColor': 'rgba(0,0,0,0.5)', 'zIndex': 3000, 'alignItems': 'center', 'justifyContent': 'center'}
+    return {'display': 'none'}
 
 
 # ==========================================
@@ -646,6 +642,13 @@ def gerar_roteiro_animacao(bfs_click, dfs_click, bfs_start, dfs_start, elements)
     trigger = ctx.triggered_id
     start_node = bfs_start if trigger == 'btn-confirm-bfs' else dfs_start
     if not start_node or not elements: raise PreventUpdate
+
+    start_node = str(start_node).strip()
+    
+    # NOVA TRAVA BFS/DFS: Se o vértice digitado não existir, cancela e não faz nada!
+    exists = any(el['data']['id'] == start_node for el in elements if 'source' not in el['data'])
+    if not exists:
+        raise PreventUpdate
 
     adj_list = {el['data']['id']: [] for el in elements if 'source' not in el['data']}
     for el in elements:
@@ -871,7 +874,6 @@ app.clientside_callback(
 @app.callback(
     Output('add-node-modal', 'style', allow_duplicate=True),
     Output('add-node-id', 'value'),
-    Output('add-node-connect-to', 'options'),
     Output('add-node-connect-to', 'value'),
     Output('add-node-weight', 'value'),
     Output('add-node-error', 'children'),
@@ -896,52 +898,53 @@ def gerenciar_modal_add_node(n_abrir, n_cancelar, n_salvar, style, node_id, conn
     new_style = style.copy() if style else {}
 
     if trigger == 'btn-add-node-menu':
-        # Abre o modal, sugere o próximo número e lista nós existentes
         new_style['display'] = 'flex'
-        nodes = [{'label': el['data']['label'], 'value': el['data']['id']} for el in elements if 'source' not in el['data']]
-        return new_style, str(counter), nodes, None, "", "", dash.no_update, dash.no_update
+        return new_style, str(counter), None, "", "", dash.no_update, dash.no_update
 
     elif trigger == 'btn-cancel-add-node':
         new_style['display'] = 'none'
-        return new_style, "", [], None, "", "", dash.no_update, dash.no_update
+        return new_style, "", None, "", "", dash.no_update, dash.no_update
 
     elif trigger == 'btn-save-add-node':
         if not node_id:
-            return new_style, node_id, dash.no_update, connect_to, weight, "⚠️ O nome não pode ser vazio.", dash.no_update, dash.no_update
+            return new_style, node_id, connect_to, weight, "⚠️ O nome não pode ser vazio.", dash.no_update, dash.no_update
 
         node_id = str(node_id).strip()
         
-        # 1. Valida se já existe
+        # 1. Valida se o vértice sendo criado já existe
         exists = any(el['data']['id'] == node_id for el in elements if 'source' not in el['data'])
         if exists:
-            return new_style, node_id, dash.no_update, connect_to, weight, f"⚠️ O vértice '{node_id}' já existe!", dash.no_update, dash.no_update
+            return new_style, node_id, connect_to, weight, f"⚠️ O vértice '{node_id}' já existe!", dash.no_update, dash.no_update
+
+        # 2. A NOVA TRAVA: Valida se o destino digitado realmente existe
+        if connect_to:
+            connect_to = str(connect_to).strip()
+            dest_exists = any(el['data']['id'] == connect_to for el in elements if 'source' not in el['data'])
+            if not dest_exists:
+                return new_style, node_id, connect_to, weight, f"⚠️ O vértice destino '{connect_to}' não existe!", dash.no_update, dash.no_update
 
         new_elements = copy.deepcopy(elements)
         new_elements.append({'data': {'id': node_id, 'label': node_id}, 'position': {'x': 400, 'y': 300}})
 
-        # 3. Cria a Aresta se uma conexão foi selecionada
+        # 3. Cria a Aresta 
         if connect_to:
             w = str(weight).strip() if weight else '0'
             base_class = (' undirected' if not props['is_directed'] else '')
             if not props['is_weighted']:
                 base_class += ' unweighted'
-                w = '0' # Força peso 0 se não for ponderado
+                w = '0' 
             
-            # Conexão de ida (novo -> selecionado)
             new_elements.append({'data': {'id': f'e_{node_id}_{connect_to}', 'source': node_id, 'target': connect_to, 'weight': w}, 'classes': base_class})
             
-            # Se não for orientado, adiciona a auto reversa interna (para não bugar a biblioteca)
             if not props['is_directed'] and node_id != connect_to:
                 new_elements.append({'data': {'id': f'e_{connect_to}_{node_id}_auto', 'source': connect_to, 'target': node_id, 'weight': w, 'is_auto_reverse': True}, 'classes': base_class})
 
         new_style['display'] = 'none'
-        
-        # 4. Só sobe o contador interno se o usuário usou a sugestão numérica padrão
         new_counter = counter + 1 if node_id == str(counter) else counter
 
-        return new_style, "", [], None, "", "", new_elements, new_counter
+        return new_style, "", None, "", "", new_elements, new_counter
         
-    return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
 # ==========================================
 # LÓGICA PARA CARREGAR GRAFOS PRONTOS (TEMPLATES)
