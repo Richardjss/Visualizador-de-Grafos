@@ -928,7 +928,13 @@ def gerenciar_modal_add_node(n_abrir, n_cancelar, n_salvar, style, node_id, conn
 
         # 3. Cria a Aresta 
         if connect_to:
-            w = str(weight).strip() if weight else '0'
+            # Pega o peso digitado de forma segura (se for vazio, vira '0')
+            w = str(weight).strip() if weight is not None and str(weight).strip() != "" else '0'
+            
+            # --- NOVA TRAVA: Avisa se tentar por peso num grafo Não Ponderado ---
+            if not props['is_weighted'] and w != '0':
+                 return new_style, node_id, connect_to, weight, "⚠️ O grafo atual é Não Ponderado. Altere para 'Ponderado' no menu Ações primeiro.", dash.no_update, dash.no_update
+
             base_class = (' undirected' if not props['is_directed'] else '')
             if not props['is_weighted']:
                 base_class += ' unweighted'
