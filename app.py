@@ -252,37 +252,37 @@ def master_controller(v_clicks, rc_clicks, dbl_clicks, tap_node, btn_node, btn_e
                     continue
                 parts = line.split()
                 if not parts: continue
-                if modo == "arestas": temp_edges.append(parts)
+                if modo == "arestas": 
+                    temp_edges.append(parts)
                 else:
-                    if "Orientado:" in line: new_props['is_directed'] = "True" in line
-                    elif "Ponderado:" in line: new_props['is_weighted'] = "True" in line
-                    elif len(parts) >= 3: pos[parts[0]] = (float(parts[1]), float(parts[2]))
+                    # 1. PARSER BLINDADO: Só fica Falso se tiver escrito 'false' explicitamente.
+                    if "Orientado:" in line: 
+                        val = line.split(":", 1)[-1].strip().lower()
+                        new_props['is_directed'] = (val != 'false')
+                    elif "Ponderado:" in line: 
+                        val = line.split(":", 1)[-1].strip().lower()
+                        new_props['is_weighted'] = (val != 'false')
+                    elif len(parts) >= 3: 
+                        pos[parts[0]] = (float(parts[1]), float(parts[2]))
 
             new_elements, max_id = [], 1
             all_node_ids = set()
             
-            
             for e in temp_edges:
-                all_node_ids.add(e[0])          # Adiciona o primeiro vértice sempre
+                all_node_ids.add(e[0])          
                 if len(e) >= 2:
-                    all_node_ids.add(e[1])      # Só tenta adicionar o destino se ele existir
+                    all_node_ids.add(e[1])      
                     
             all_node_ids.update(pos.keys())
             
-            # ---> INÍCIO DA NOVA LÓGICA DE DISTRIBUIÇÃO EM CÍRCULO <---
-            
             nos_sem_posicao = [nid for nid in all_node_ids if nid not in pos]
             qtd_sem_pos = len(nos_sem_posicao)
-            
-            # Se houver muitos vértices sem posição, o raio do círculo aumenta
             raio = max(200, qtd_sem_pos * 12) if qtd_sem_pos > 0 else 200
 
             for nid in all_node_ids:
                 if nid in pos:
-                    # Se o txt forneceu o X e Y, respeita a posição original
                     x, y = pos[nid]
                 else:
-                    # Se não forneceu, calcula um lugar na roda para ele
                     idx = nos_sem_posicao.index(nid)
                     angle = (2 * math.pi * idx) / qtd_sem_pos
                     x = 400 + raio * math.cos(angle)
@@ -290,20 +290,33 @@ def master_controller(v_clicks, rc_clicks, dbl_clicks, tap_node, btn_node, btn_e
                 
                 new_elements.append({'data': {'id': nid, 'label': nid}, 'position': {'x': x, 'y': y}})
                 if nid.isdigit(): max_id = max(max_id, int(nid) + 1)
-            # ---> FIM DA LÓGICA DE DISTRIBUIÇÃO <---
             
             base_class = ''
             if not new_props['is_directed']: base_class += ' undirected'
             if not new_props['is_weighted']: base_class += ' unweighted'
             
             for e in temp_edges:
-                # Se for um vértice isolado, pula a criação de aresta
                 if len(e) < 2:
                     continue
                     
                 u, v = e[0], e[1]
                 w = e[2] if len(e) >= 3 else '0'
                 if not new_props['is_weighted']: w = '0'
+                
+                # 2. TRAVA ANTI-CLONAGEM: Verifica se a conexão já existe antes de criar
+                ja_existe = False
+                for el in new_elements:
+                    if 'source' in el['data']:
+                        if new_props['is_directed']:
+                            if el['data']['source'] == u and el['data']['target'] == v:
+                                ja_existe = True; break
+                        else: # Se for Não Orientado, checa ida e volta
+                            if (el['data']['source'] == u and el['data']['target'] == v) or \
+                               (el['data']['source'] == v and el['data']['target'] == u):
+                                ja_existe = True; break
+                                
+                if ja_existe:
+                    continue # Se já existe, ignora e vai para a próxima linha do txt
                 
                 # Cria a conexão
                 new_elements.append({'data': {'id': f'e_{u}_{v}', 'source': u, 'target': v, 'weight': w}, 'classes': base_class})
@@ -312,8 +325,12 @@ def master_controller(v_clicks, rc_clicks, dbl_clicks, tap_node, btn_node, btn_e
                 if not new_props['is_directed'] and u != v:
                     new_elements.append({'data': {'id': f'e_{v}_{u}_auto', 'source': v, 'target': u, 'weight': w, 'is_auto_reverse': True}, 'classes': base_class})
             
-            # Fim do bloco de upload
-            return new_elements, max_id, {'mode': 'idle', 'source_node': None}, hide_node_menu, hide_edge_menu, hide_overlay, None, "", hide_status, hide_modal, "", orient_style, pond_style, new_props, None
+            # 3. BÔNUS VISUAL: Atualiza as cores dos botões "Orientado/Ponderado" no menu conforme o arquivo carregado!
+            novo_orient_style = {**DROPDOWN_ITEM_STYLE, 'backgroundColor': '#444' if new_props['is_directed'] else '#2980b9'}
+            novo_pond_style = {**DROPDOWN_ITEM_STYLE, 'backgroundColor': '#444' if new_props['is_weighted'] else '#2980b9'}
+
+            return new_elements, max_id, {'mode': 'idle', 'source_node': None}, hide_node_menu, hide_edge_menu, hide_overlay, None, "", hide_status, hide_modal, "", novo_orient_style, novo_pond_style, new_props, None
+            
         except Exception as e:
             print("Erro ao ler arquivo:", e)
             raise PreventUpdate
