@@ -137,3 +137,24 @@
 .dark-theme .rc-slider-tooltip-arrow {
     border-top-color: #ffffff !important; /* Pinta a setinha de branco tbm */
 }
+
+/* ==========================================
+   AJUSTE DO DCC.DROPDOWN PARA O MODO ESCURO
+   ========================================== */
+.dark-theme .Select-control {
+    background-color: #ffffff !important;
+    border: 1px solid #ccc !important;
+    color: #111111 !important;
+}
+
+.dark-theme .Select-menu-outer {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    border: 1px solid #3498db !important;
+    z-index: 9999 !important;
+}
+
+.dark-theme .is-focused:not(.is-open) > .Select-control {
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+}
