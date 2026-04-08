@@ -161,7 +161,7 @@ def create_layout():
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '320px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Busca em Largura (BFS)", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
                     html.Label("Escolha o Vértice Inicial:", style={'display': 'block', 'marginBottom': '8px', 'fontWeight': 'bold', 'color': '#555'}),
-                    dbc.Select(id='bfs-start-node', options=[], style={'marginBottom': '20px'}),
+                    dcc.Dropdown(id='bfs-start-node', options=[], searchable=True, clearable=False, placeholder="Digite ou selecione...", style={'marginBottom': '20px', 'color': '#2c3e50'}),
                     html.Div(style={'display': 'flex', 'justifyContent': 'space-between'}, children=[
                         html.Button('Cancelar', id='btn-cancel-bfs', style={'padding': '10px 15px', 'backgroundColor': '#e74c3c', 'color': 'white', 'border': 'none', 'borderRadius': '4px', 'cursor': 'pointer', 'fontWeight': 'bold', 'width': '45%'}, className='hover-btn'),
                         html.Button('Iniciar BFS', id='btn-confirm-bfs', style={'padding': '10px 15px', 'backgroundColor': '#3498db', 'color': 'white', 'border': 'none', 'borderRadius': '4px', 'cursor': 'pointer', 'fontWeight': 'bold', 'width': '45%'}, className='hover-btn')
@@ -174,7 +174,7 @@ def create_layout():
                 html.Div(style={'backgroundColor': 'white', 'padding': '25px', 'borderRadius': '8px', 'width': '320px', 'boxShadow': '0 4px 15px rgba(0,0,0,0.3)'}, children=[
                     html.H3("Busca em Profundidade (DFS)", style={'marginTop': '0', 'color': '#333', 'textAlign': 'center'}),
                     html.Label("Escolha o Vértice Inicial:", style={'display': 'block', 'marginBottom': '8px', 'fontWeight': 'bold', 'color': '#555'}),
-                    dbc.Select(id='dfs-start-node', options=[], style={'marginBottom': '20px'}),
+                    dcc.Dropdown(id='dfs-start-node', options=[], searchable=True, clearable=False, placeholder="Digite ou selecione...", style={'marginBottom': '20px', 'color': '#2c3e50'}),
                     html.Div(style={'display': 'flex', 'justifyContent': 'space-between'}, children=[
                         html.Button('Cancelar', id='btn-cancel-dfs', style={'padding': '10px 15px', 'backgroundColor': '#e74c3c', 'color': 'white', 'border': 'none', 'borderRadius': '4px', 'cursor': 'pointer', 'fontWeight': 'bold', 'width': '45%'}, className='hover-btn'),
                         html.Button('Iniciar DFS', id='btn-confirm-dfs', style={'padding': '10px 15px', 'backgroundColor': '#e67e22', 'color': 'white', 'border': 'none', 'borderRadius': '4px', 'cursor': 'pointer', 'fontWeight': 'bold', 'width': '45%'}, className='hover-btn')
@@ -191,7 +191,7 @@ def create_layout():
                     dbc.Input(id='add-node-id', type='text', placeholder="Ex: A, 1, v1...", style={'marginBottom': '15px'}),
                     
                     html.Label("Conectar a (Opcional):", style={'display': 'block', 'marginBottom': '5px', 'fontWeight': 'bold', 'color': '#555'}),
-                    dbc.Select(id='add-node-connect-to', options=[], style={'marginBottom': '15px'}),
+                    dcc.Dropdown(id='add-node-connect-to', options=[], searchable=True, clearable=True, placeholder="Digite ou selecione...", style={'marginBottom': '15px', 'color': '#2c3e50'}),
                     
                     html.Label("Peso da Aresta (Opcional):", style={'display': 'block', 'marginBottom': '5px', 'fontWeight': 'bold', 'color': '#555'}),
                     dbc.Input(id='add-node-weight', type='number', placeholder="0", style={'marginBottom': '10px'}),
