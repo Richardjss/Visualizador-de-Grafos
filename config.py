@@ -23,6 +23,19 @@ STYLESHEET = [
         'transition-property': 'background-color, width, height', 'transition-duration': '0.3s'
     }},
 
+    # CORES DO FLOYD-WARSHALL
+    {'selector': '.floyd-pivot', 'style': {
+        'background-color': '#9b59b6', 'color': 'white', 'border-color': '#8e44ad',
+        'border-width': 4, 'width': '55px', 'height': '55px', 'font-size': '22px',
+        'transition-property': 'background-color, width, height', 'transition-duration': '0.3s'
+    }},
+    {'selector': '.floyd-source', 'style': {
+        'background-color': '#3498db', 'color': 'white', 'border-width': 3, 'border-color': '#2980b9'
+    }},
+    {'selector': '.floyd-target', 'style': {
+        'background-color': '#e67e22', 'color': 'white', 'border-width': 3, 'border-color': '#d35400'
+    }},
+
     {'selector': 'edge', 'style': {
         'curve-style': 'bezier',
         'label': 'data(weight)',
@@ -32,28 +45,45 @@ STYLESHEET = [
         'text-background-opacity': 1,
         'text-background-color': '#ffffff',
         'text-background-padding': '3px',
-        'text-margin-y': -15,
+        'text-margin-y': -10,
+        'text-rotation': 'autorotate',
         'line-color': '#95a5a6',
         'target-arrow-shape': 'triangle',
         'target-arrow-color': '#95a5a6',
-       
     }},
 
     {'selector': '.undirected', 'style': {'target-arrow-shape': 'none'}},
 
     # ESTILO PARA ITENS SELECIONADOS
-    {'selector': ':selected', 'style': {
+    {'selector': 'node:selected', 'style': {
         'border-width': '4px', 'border-color': '#2980b9',
-        'background-color': '#3498db', 'line-color': '#3498db',
-        'target-arrow-color': '#3498db', 'source-arrow-color': '#3498db'
+        'background-color': '#3498db'
     }},
-    # ESTILO DA CAIXA DE SELEÇÃO
+    {'selector': 'edge:selected', 'style': {
+        'width': 4,
+        'line-color': '#f39c12',
+        'target-arrow-color': '#f39c12',
+        'color': '#ffffff',
+        'text-background-color': '#e67e22',
+        'text-background-opacity': 1,
+        'z-index': 1000
+    }},
+
     {'selector': 'core', 'style': {
-        'selection-box-color': '#3498db',
+        'selection-box-color': "#9c3edc",
         'selection-box-opacity': 0.2,
-        'selection-box-border-color': '#2980b9',
+        'selection-box-border-color': '#9c3edc',
         'selection-box-border-width': 1,
-        'active-bg-color': '#3498db'
+        'active-bg-color': '#9c3edc'
+    }},
+
+    {'selector': '.tree-edge', 'style': {
+        'line-color': '#9c3edc', 
+        'width': 5,
+        'target-arrow-color': '#9c3edc',
+        'transition-property': 'line-color, width, target-arrow-color',
+        'transition-duration': '0.3s',
+        'z-index': 100
     }}
 ]
 
