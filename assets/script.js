@@ -16,8 +16,23 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
             document.addEventListener('keydown', function(e) {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                
+                // Atalho: V (Criar Vértice)
                 if (e.key === 'v' || e.key === 'V') {
                     const btn = document.getElementById('hidden-v-btn');
+                    if (btn) btn.click();
+                }
+
+                // Atalho: E (Criar Aresta do vértice selecionado)
+                if (e.key === 'e' || e.key === 'E') {
+                    const btn = document.getElementById('hidden-e-btn');
+                    if (btn) btn.click();
+                }
+
+                // Atalho: Ctrl + S (Salvar Grafo)
+                if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+                    e.preventDefault();
+                    const btn = document.getElementById('hidden-ctrl-s-btn');
                     if (btn) btn.click();
                 }
             });
@@ -40,18 +55,17 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                         document.getElementById('hidden-right-click-btn').click();
                     });
 
-                    cy.on('tap free', 'node, edge', function(evt) {
-                        setTimeout(function() {
-                            if (cy.$(':selected').length === 1) {
-                                evt.target.unselect();
-                            }
-                        }, 10);
-                    });
-
                     let tappedTimeout;
                     let tappedBefore;
-                    cy.on('tap', 'node, edge', function(evt) {
+                    cy.on('tap', function(evt) {
                         let tappedNow = evt.target;
+                        
+                        if (tappedNow === cy) {
+                            setDashInputValue('right-click-data', JSON.stringify({bg_cancel: true}));
+                            document.getElementById('hidden-right-click-btn').click();
+                            return;
+                        }
+
                         if (tappedTimeout && tappedBefore === tappedNow) {
                             clearTimeout(tappedTimeout);
                             tappedTimeout = null;
@@ -65,10 +79,49 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                             tappedTimeout = setTimeout(function(){ tappedTimeout = null; }, 300);
                             tappedBefore = tappedNow;
                         }
+                        
+                        if (tappedNow.isEdge()) {
+                            setDashInputValue('right-click-data', JSON.stringify({bg_cancel: true}));
+                            document.getElementById('hidden-right-click-btn').click();
+                        }
                     });
                 }
             }, 500);
             
+            // --- LÓGICA DE REDIMENSIONAMENTO MANUAL ---
+            let isResizing = false;
+
+            document.addEventListener('mousedown', function(e) {
+                if (e.target.id === 'sidebar-resizer') {
+                    isResizing = true;
+                    document.body.style.cursor = 'ew-resize';
+                    document.body.style.userSelect = 'none'; 
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isResizing) return;
+
+                const sidebar = document.getElementById('anim-sidebar');
+                if (!sidebar) return;
+
+                let newWidth = window.innerWidth - e.clientX - 15;
+
+                // Limite Mínimo: 300px | Limite Máximo: 45% da tela
+                const maxWidth = window.innerWidth * 0.45; 
+                
+                if (newWidth > 300 && newWidth < maxWidth) {
+                    sidebar.style.width = newWidth + 'px';
+                    sidebar.classList.remove('maximized-sidebar');
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto';
+            });
+
             return window.dash_clientside.no_update;
         }
     }
