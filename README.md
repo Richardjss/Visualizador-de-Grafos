@@ -2,6 +2,8 @@
 
 Uma aplicação interativa desenvolvida em Python (Dash/Cytoscape) para criar, editar e simular algoritmos em grafos (Busca em Largura - BFS e Busca em Profundidade - DFS).
 
+**[CLIQUE AQUI PARA ACESSAR A APLICAÇÃO ONLINE](https://visualizador-de-grafos.onrender.com)**
+
 ## Como rodar o projeto localmente
 
 Para rodar este projeto no seu computador, você precisará ter o **Python** instalado.
