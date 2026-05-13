@@ -15,10 +15,13 @@ def create_layout():
         dcc.Store(id='action-state', data={'mode': 'idle', 'source_node': None}),
         dcc.Store(id='selected-node', data=None),
         dcc.Store(id='graph-props', data={'is_directed': True, 'is_weighted': True}),
+        dcc.Store(id='floyd-path-data', data={'matrix': [], 'nodes': []}),
 
         html.Div(id='top-menu-overlay', style={'display': 'none'}),
         
         html.Button(id='hidden-v-btn', style={'display': 'none'}),
+        html.Button(id='hidden-e-btn', style={'display': 'none'}),
+        html.Button(id='hidden-ctrl-s-btn', style={'display': 'none'}),
         dcc.Input(id='right-click-data', type='text', style={'display': 'none'}),
         html.Button(id='hidden-right-click-btn', style={'display': 'none'}),
         dcc.Input(id='dbl-click-data', type='text', style={'display': 'none'}),
@@ -41,7 +44,12 @@ def create_layout():
                 html.Button('⚙ Algoritmos ▼', id='btn-toggle-algoritmos', style=BTN_GRAY_STYLE, className='hover-btn'),
                 html.Div(id="menu-algoritmos", style=DROPDOWN_MENU_STYLE, children=[
                     html.Button('BFS', id='btn-bfs', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
-                    html.Button('DFS', id='btn-dfs', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item')
+                    html.Button('DFS', id='btn-dfs', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
+                    html.Button([
+                        html.Span('Algoritmo'), 
+                        html.Br(), 
+                        html.Span('Floyd-Warshall')
+                    ], id='btn-floyd', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item')
                 ])
             ]),
             
@@ -65,6 +73,8 @@ def create_layout():
                     html.Button('Casa (5V)', id='btn-grafo-casa', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
                     html.Button('Círculo (8V)', id='btn-grafo-circulo', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
                     html.Button('Árvore (15V)', id='btn-grafo-arvore', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
+                    html.Button('Floyd 1 (6V)', id='btn-grafo-floyd', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
+                    html.Button('Floyd 2 (10V)', id='btn-grafo-floyd2', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
                     html.Button('Personalizado', id='btn-grafo-custom-trigger', n_clicks=0, style=DROPDOWN_ITEM_STYLE, className='dropdown-item'),
                 ])
             ]),
@@ -82,6 +92,8 @@ def create_layout():
 
         html.Div(id='canvas-wrapper', style=CANVAS_WRAPPER_STYLE, children=[
             html.Div(id='menu-overlay', style={'display': 'none', 'position': 'fixed', 'top': 0, 'left': 0, 'width': '100%', 'height': '100%', 'zIndex': 999, 'cursor': 'default'}),
+
+            html.Div(id='legend-panel', style={'display': 'none'}),
 
             html.Div(id='context-menu', style={'display': 'none'}, children=[
                 html.Button('🟢 Criar Vértice', id='btn-add-node', style=CTX_BTN_STYLE, className='hover-btn'),
@@ -102,9 +114,15 @@ def create_layout():
                 html.Div(id='info-panel-content')
             ]),
 
-            html.Div(id='anim-sidebar', style={'display': 'none'}, children=[
-                html.H3("Trace (Memória)", style={'marginTop': '0', 'color': '#2c3e50', 'borderBottom': '2px solid #3498db', 'paddingBottom': '10px', 'textAlign': 'center', 'fontSize': '18px'}),
-                html.Div(id='anim-sidebar-content')
+            html.Div(id='anim-sidebar', className='', style={'display': 'none'}, children=[
+                html.Div(id='sidebar-resizer', className='resizer-handle'),
+                
+                html.Div(style={'position': 'absolute', 'top': '10px', 'right': '10px', 'display': 'flex', 'gap': '4px', 'zIndex': 3000}, children=[
+                    html.Button("-", id='btn-win-min', title="Tamanho Padrão", className='win-btn'),
+                    html.Button("□", id='btn-win-max', title="Maximizar Tela", className='win-btn')
+                ]),
+                
+                html.Div(id='anim-sidebar-content', style={'display': 'flex', 'flexDirection': 'column', 'height': '100%', 'minHeight': '0'})
             ]),
 
             html.Div(id='dummy-unselect', style={'display': 'none'}),
@@ -231,6 +249,26 @@ def create_layout():
                 boxSelectionEnabled=True
             ),
 
+            # Controle de Velocidade
+            html.Div(
+                id='speed-control-container', 
+                style={'display': 'none'},
+                children=[
+                    html.Label("Velocidade", id='speed-label', style={'textAlign': 'center', 'width': '100%', 'fontWeight': 'bold', 'color': '#2c3e50', 'fontSize': '12px', 'marginBottom': '8px', 'textTransform': 'uppercase', 'letterSpacing': '1px'}),
+                    dcc.Slider(
+                        id='speed-slider',
+                        min=0, max=3, step=1, 
+                        marks={
+                            0: {'label': '0.5x', 'style': {'color': '#2c3e50'}},
+                            1: {'label': '1x', 'style': {'color': '#2c3e50'}},
+                            2: {'label': '2x', 'style': {'color': '#2c3e50'}},
+                            3: {'label': '4x', 'style': {'color': '#2c3e50'}}
+                        },
+                        value=1,
+                    )
+                ]
+            ),
+
             # Controle de Zoom
             html.Div(
                 id='zoom-control-container', 
@@ -241,7 +279,6 @@ def create_layout():
                     'boxShadow': '0 4px 10px rgba(0,0,0,0.2)', 'zIndex': 1000
                 },
                 children=[
-                    # O Label agora tem um ID para atualizarmos o texto dele
                     html.Label("Ajuste de Zoom: 1.00x", id='zoom-label', style={'fontWeight': 'bold', 'color': '#2c3e50', 'fontSize': '14px', 'marginBottom': '5px', 'display': 'block'}),
                     dcc.Slider(
                         id='zoom-slider',
