@@ -292,6 +292,23 @@ def create_layout():
                         
                     )
                 ]
-            )
+                
+            ),
+
+            html.Div(
+                "© Richard",
+                style={
+                    'position': 'absolute',
+                    'bottom': '10px',
+                    'right': '20px',
+                    'color': '#7f8c8d',
+                    'fontSize': '13px',
+                    'fontWeight': '500',
+                    'zIndex': '1000',
+                    'pointerEvents': 'none',
+                    'fontFamily': 'sans-serif',
+                    'opacity': '0.8'
+                }
+            ),
         ])
     ])
